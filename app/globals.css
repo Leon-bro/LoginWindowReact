@@ -1,26 +1,137 @@
 @import "tailwindcss";
 
+@property --ripple-size {
+  syntax: '<percentage>';
+  initial-value: 0%;
+  inherits: false;
+}
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* The exact colors from the image analysis */
+  --bg-gradient-string: linear-gradient(45deg, hsl(231, 46%, 8%) 0%, hsl(229, 44%, 5%) 100%);
+  --bg-solid: hsl(231, 46%, 8%);
+  --foreground: #ffffff;
+  --card-border-color: #00EEFF; /* Neon Cyan */
+  --input-border: #3d5a80;
+  --border: #0099cc;
+  --border-dark: #007AA3;
+  --overlay-gradient: linear-gradient(225deg, var(--border) 0%, var(--border-dark) 100%);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* The core colors derived from the video */
+  --background-image-void: var(--bg-gradient-string);
+  --color-void-dark: var(--bg-solid);
+  --color-neon-cyan: #00EEFF;  /* The bright cyberpunk cyan */
+  --color-overlay-black: var(--overlay-gradient);
+
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg-gradient-string: linear-gradient(45deg, hsl(231, 46%, 8%) 0%, hsl(229, 44%, 5%) 100%);
+    --bg-solid: hsl(231, 46%, 8%);
+    --clip-path-background: linear-gradient(45deg,rgba(0, 0, 0, 1) 0%, rgba(46, 154, 161, 1) 100%);
+    --overlay-gradient: linear-gradient(225deg, var(--border) 0%, var(--border-dark) 100%);;
+    --foreground: #b5b4b4;
+    --card-border-color: #5fb7c0;
+    --border: #0099cc;
+    --border-dark: #007AA3;
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--color-void-dark);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  height: 100vh;
+  margin: 0;
+}
+@keyframes neon-flow {
+  0% {
+    /* Layer 1: Tight bright glow | Layer 2: Wide soft glow */
+    --ripple-size: 0%;
+    box-shadow:
+            0 0 10px rgba(0, 238, 255, 0.8),  /* Inner intense glow */
+            0 0 50px rgba(0, 238, 255, 0.4);  /* Outer atmosphere */
+  }
+  50% {
+    /* Dim both layers slightly for the "breathing" effect */
+    box-shadow:
+            0 0 5px  rgba(0, 238, 255, 0.6),
+            0 0 30px rgba(0, 238, 255, 0.2);
+  }
+  100% {
+    --ripple-size: 100%;
+    box-shadow:
+            0 0 10px rgba(0, 238, 255, 0.8),
+            0 0 50px rgba(0, 238, 255, 0.4);
+  }
+}
+.animate-neon-flow {
+  animation: neon-flow 6s ease infinite;
+}
+.overlay{
+  background:
+    /* The Ripple: Transparent -> Cyan Ring -> Transparent */
+          radial-gradient(
+                  circle at center,
+                  transparent var(--ripple-size),
+                  rgba(0, 153, 204, 0.61) calc(var(--ripple-size) + 10%),
+                  rgba(0, 153, 204, 0.5) calc(var(--ripple-size) + 20%),
+                  transparent calc(var(--ripple-size) + 30%)
+          ),
+            /* The Base Background (Static Deep Blue/Teal) */
+          linear-gradient(225deg, #0099CC 0%, #023F57 100%);
+  border: 3px solid var(--border);
+}
+/* 1. ANIMATION: Swing to Left (Show Register) */
+@keyframes swing-to-left {
+  0% {
+    transform-origin: 13% 50%;
+    rotate: 70deg;
+  }
+  48% {
+    rotate: 0deg;
+  }
+  52% {
+    transform-origin: -13% 50%;
+  }
+  100% {
+    transform-origin: -13% 50%;
+    rotate: -70deg;
+  }
+}
+
+/* 2. ANIMATION: Swing to Right (Show Login) */
+@keyframes swing-to-right {
+  0% {
+    transform-origin: -13% 50%;
+    rotate: -70deg;
+  }
+  48% {
+    rotate: 0deg;
+  }
+  52% {
+    transform-origin: 13% 50%;
+  }
+  100% {
+    transform-origin: 13% 50%;
+    rotate: 70deg;
+  }
+}
+
+.anim-to-register {
+  animation: swing-to-left 2s ease-in forwards;
+}
+.anim-to-login {
+  animation: swing-to-right 2s ease-in forwards;
+}
+.primary-button{
+  background-image: linear-gradient(to top, #070d1e 0,#37aec2 50%, #070d1e 100%);
+  background-position-y: 100%;
+  background-size: 100% 200%;
+  transition-property: background-position;
+}
+.primary-button:hover{
+  background-position-y: 0;
 }
