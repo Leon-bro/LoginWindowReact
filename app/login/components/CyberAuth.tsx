@@ -94,52 +94,63 @@ export function StaggerContainer({
                                      children,
                                      isActive,
                                      direction = "left",
-                                     duration = 600,
-                                     staggerDelay = 50,
+                                     totalDuration = 900, // The constraint: "It happens within this general duration"
                                      delayEnter = 700,
                                      delayExit = 0
                                  }: {
     children: ReactNode,
     isActive: boolean,
     direction?: "left" | "right",
-    duration?: number,
-    staggerDelay?: number,
+    totalDuration?: number,
     delayEnter?: number,
     delayExit?: number
 }) {
 
-    // 1. Calculate the offset string manually
-    // If exiting left -> move -50px. If exiting right -> move +50px.
     const offsetDistance = "120px";
     const exitValue = direction === "left" ? `-${offsetDistance}` : offsetDistance;
-
-    // 2. Determine the transform string
-    // Active = 0px (Center). Inactive = exitValue.
     const transformStyle = isActive ? "translateX(0px)" : `translateX(${exitValue})`;
-
     const baseDelay = isActive ? delayEnter : delayExit;
+
+    // 1. Count valid children to calculate timings
+    const validChildren = Children.toArray(children).filter(isValidElement);
+    const count = validChildren.length;
+
+    // 2. Define the "Small Duration" for one item
+    // It must be faster than the total duration to feel "independent"
+    // e.g., if total is 600ms, let's give each item 300ms to move.
+    const childDuration = 500;
+
+    // 3. Calculate Stagger Delay dynamically
+    // We have (Total Time - Item Time) remaining to spread the delays across children.
+    // Formula: available_delay_space / (items - 1)
+    const availableDelay = Math.max(0, totalDuration - childDuration);
+    const staggerDelay = count > 1 ? availableDelay / (count - 1) : 0;
 
     return (
         <div className="w-full flex flex-col gap-6">
-            {Children.map(children, (child, index) => {
-                if (!isValidElement(child)) return child;
+            {validChildren.map((child, index) => {
 
-                const totalDelay = baseDelay + (index * staggerDelay);
+                // 4. Calculate this specific child's timing
+                const currentStagger = index * staggerDelay;
+                const totalDelay = baseDelay + currentStagger;
 
                 return (
                     <div
+                        key={index}
                         style={{
-                            // A. Timing Styles
+                            // TIMING LOGIC:
+                            // Delay: specific to index
                             transitionDelay: `${totalDelay}ms`,
-                            transitionDuration: `${duration}ms`,
-                            transitionProperty: "opacity, transform",
-                            transitionTimingFunction: "ease-in-out",
+                            // Duration: Fixed "Small" duration (300ms), NOT the total 600ms
+                            transitionDuration: `${childDuration}ms`,
 
-                            // B. The Movement Style (Directly applied)
+                            transitionProperty: "opacity, transform",
+                            transitionTimingFunction: "ease-out",
+
+                            // VISUAL STATES:
                             transform: transformStyle,
                             opacity: isActive ? 1 : 0
                         }}
-                        // C. Base Classes (No Tailwind transform classes needed anymore)
                         className="will-change-[transform,opacity]"
                     >
                         {child}
