@@ -18,7 +18,7 @@ export default function AuthCard() {
             <div className="relative w-full max-w-5xl min-w-2xl h-[550px] bg-void">
 
                 {/* --- LAYER 1: The Glow --- */}
-                <div className="absolute -inset-3 rounded-[30px] bg-neon-cyan/40 blur-2xl opacity-80"></div>
+                <div className="absolute -inset-1 rounded-[5px] bg-neon-cyan/40 blur-sm opacity-80"></div>
 
                 {/* --- LAYER 2: The Main Card --- */}
                 <div className="relative h-full w-full bg-void-dark rounded-[12px] border border-neon-cyan/30 overflow-hidden shadow-sm flex">
