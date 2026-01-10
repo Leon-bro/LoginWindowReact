@@ -121,10 +121,10 @@ body {
 }
 
 .anim-to-register {
-  animation: swing-to-left 2s ease-in forwards;
+  animation: swing-to-left 2s ease-in-out forwards;
 }
 .anim-to-login {
-  animation: swing-to-right 2s ease-in forwards;
+  animation: swing-to-right 2s ease-in-out forwards;
 }
 .primary-button{
   background-image: linear-gradient(to top, #070d1e 0,#37aec2 50%, #070d1e 100%);
